@@ -16,11 +16,25 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('dev'));
 }
 
+// Request logging
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.originalUrl}`);
+  next();
+});
+
+// Root health-check
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    message: 'Server is running'
+  });
+});
+
 // API Routes
 app.use('/api', apiRoutes);
 
 // Catch 404 and forward to error handler
-app.use((req, res, next) => {
+app.all('*', (req, res, next) => {
   next(new NotFoundError(`Can't find ${req.originalUrl} on this server!`));
 });
 
